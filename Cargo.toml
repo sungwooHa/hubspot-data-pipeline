@@ -1,0 +1,36 @@
+[package]
+name = "hubspot-data-pipeline"
+version = "0.1.0"
+edition = "2021"
+author = ["Ted <ttlhi10@gmail.com>"]
+description = "A simple data pipeline for HubSpot"
+license = "MIT"
+repository = "https://github.com/sungwooHa/hubspot-data-pipeline"
+
+
+[dependencies]
+tokio = { version = "1.28", features = ["full"] }
+reqwest = { version = "0.12.5", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "1.0"
+dotenv = "0.15"
+log = "0.4"
+env_logger = "0.11.5"
+clap = { version = "4.3", features = ["derive"] }
+async-trait = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+percent-encoding = "=2.3.1"
+
+[dev-dependencies]
+mockito = "1.1"  #for test
+tokio-test = "0.4"
+
+[lib]
+name = "hubspot_data_pipeline"
+path = "src/lib.rs"
+
+[[bin]]
+name = "hubspot-cli"
+path = "src/main.rs"
