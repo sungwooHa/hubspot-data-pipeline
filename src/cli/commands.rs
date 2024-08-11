@@ -1,5 +1,4 @@
 use crate::config::Config;
-use crate::models::{Company, Contact, Deal};
 use crate::utils::error::Result;
 use crate::HubSpotFetcher;
 use clap::Subcommand;

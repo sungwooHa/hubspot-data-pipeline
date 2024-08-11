@@ -1,3 +1,4 @@
+use chrono::format;
 use reqwest::{Client, StatusCode};
 use serde::de::DeserializeOwned;
 use std::time::Duration;
@@ -46,10 +47,16 @@ impl ApiClient {
         T: DeserializeOwned,
     {
         match response.status() {
-            StatusCode::OK | StatusCode::CREATED => response
-                .json::<T>()
-                .await
-                .map_err(|e| HubSpotError::DeserializationError(e.to_string())),
+            StatusCode::OK | StatusCode::CREATED =>{
+                let text = response.text().await.map_err(|e| HubSpotError::NetworkError(e.to_string()))?;
+                match serde_json::from_str::<T>(&text) {
+                    Ok(data) => Ok(data),
+                    Err(e) => {
+                        println!("Failed to deserialize response. Raw response: {}", text);
+                        Err(HubSpotError::DeserializationError(format!("Error: {}. Raw response: {}", e, text)))
+                    }
+                }
+            },
             StatusCode::UNAUTHORIZED => Err(HubSpotError::InvalidApiKey(
                 self.config.hubspot_api_key.clone(),
             )),

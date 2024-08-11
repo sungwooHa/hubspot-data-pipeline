@@ -16,7 +16,7 @@ impl Config {
             hubspot_api_key: env::var("HUBSPOT_API_KEY")
                 .map_err(|_| HubSpotError::InvalidApiKey("HUBSPOT_API_KEY".to_string()))?,
             api_base_url: env::var("API_BASE_URL")
-                .unwrap_or_else(|_| "https://api.hubapi.com/v3".to_string()),
+                .unwrap_or_else(|_| "https://api.hubapi.com".to_string()),
             timeout_seconds: env::var("TIMEOUT_SECONDS")
                 .unwrap_or_else(|_| "30".to_string())
                 .parse()
@@ -57,7 +57,7 @@ mod tests {
 
         let config = Config::from_env().unwrap();
 
-        assert_eq!(config.api_base_url, "https://api.hubapi.com/v3");
+        assert_eq!(config.api_base_url, "https://api.hubapi.com/");
         assert_eq!(config.timeout_seconds, 30);
         assert_eq!(config.max_retries, 3);
     }
