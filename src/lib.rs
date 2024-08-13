@@ -37,18 +37,18 @@ impl HubSpotFetcher {
     }
 
     /// Fetch all contacts from HubSpot.
-    pub async fn fetch_contacts(&self) -> Result<Vec<Contact>> {
-        ContactsEndpoint::fetch_all(&self.client).await
+    pub async fn fetch_contacts(&self, properties: Option<&[String]>) -> Result<Vec<Contact>> {
+        ContactsEndpoint::fetch_all(&self.client, properties).await
     }
 
     /// Fetch all companies from HubSpot.
-    pub async fn fetch_companies(&self) -> Result<Vec<Company>> {
-        CompaniesEndpoint::fetch_all(&self.client).await
+    pub async fn fetch_companies(&self, properties: Option<&[String]>) -> Result<Vec<Company>> {
+        CompaniesEndpoint::fetch_all(&self.client, properties).await
     }
 
     /// Fetch all deals from HubSpot.
-    pub async fn fetch_deals(&self) -> Result<Vec<Deal>> {
-        DealsEndpoint::fetch_all(&self.client).await
+    pub async fn fetch_deals(&self, properties: Option<&[String]>) -> Result<Vec<Deal>> {
+        DealsEndpoint::fetch_all(&self.client, properties).await
     }
 
     // Add more methods as needed for other operations

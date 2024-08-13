@@ -17,7 +17,7 @@ pub enum HubSpotError {
     MissingApiKey,
 
     #[error("Serialization error: {0}")]
-    SerializationError(#[from] serde_json::Error),
+    SerializationError(String),
 
     #[error("Environment variable not found: {0}")]
     EnvVarError(#[from] std::env::VarError),
@@ -42,6 +42,9 @@ pub enum HubSpotError {
 
     #[error("File read error : {0}")]
     FileError(String),
+
+    #[error("Url Parse Error : {0}")]
+    UrlParseError(String),
 }
 
 impl HubSpotError {

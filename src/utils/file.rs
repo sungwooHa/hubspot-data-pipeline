@@ -1,9 +1,9 @@
 // src/utils/file.rs
 
+use crate::utils::error::{HubSpotError, Result};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
-use crate::utils::error::{Result, HubSpotError};
 
 pub fn read_properties<P: AsRef<Path>>(file_path: P) -> Result<Vec<String>> {
     let file = File::open(file_path).map_err(|e| HubSpotError::FileError(e.to_string()))?;

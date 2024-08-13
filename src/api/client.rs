@@ -1,6 +1,6 @@
-use chrono::format;
 use reqwest::{Client, StatusCode};
 use serde::de::DeserializeOwned;
+use serde::Serialize;
 use std::time::Duration;
 
 use crate::config::Config;
@@ -24,11 +24,35 @@ impl ApiClient {
         }
     }
 
+    pub async fn get_with_query<T, Q>(&self, endpoint: &str, query: &Q) -> Result<T>
+    where
+        T: DeserializeOwned,
+        Q: Serialize,
+    {
+        let base_url = format!("{}{}", self.config.api_base_url, endpoint);
+        let query_string = serde_qs::to_string(query)
+            .map_err(|e| HubSpotError::SerializationError(e.to_string()))?;
+        let url = format!("{}?{}", base_url, query_string);
+
+        let response = self
+            .client
+            .get(url)
+            .header(
+                "Authorization",
+                format!("Bearer {}", self.config.hubspot_api_key),
+            )
+            .send()
+            .await?;
+
+        self.handle_response(response).await
+    }
+
     pub async fn get<T>(&self, endpoint: &str) -> Result<T>
     where
         T: DeserializeOwned,
     {
         let url = format!("{}{}", self.config.api_base_url, endpoint);
+
         let response = self
             .client
             .get(&url)
@@ -47,16 +71,22 @@ impl ApiClient {
         T: DeserializeOwned,
     {
         match response.status() {
-            StatusCode::OK | StatusCode::CREATED =>{
-                let text = response.text().await.map_err(|e| HubSpotError::NetworkError(e.to_string()))?;
+            StatusCode::OK | StatusCode::CREATED => {
+                let text = response
+                    .text()
+                    .await
+                    .map_err(|e| HubSpotError::NetworkError(e.to_string()))?;
                 match serde_json::from_str::<T>(&text) {
                     Ok(data) => Ok(data),
                     Err(e) => {
                         println!("Failed to deserialize response. Raw response: {}", text);
-                        Err(HubSpotError::DeserializationError(format!("Error: {}. Raw response: {}", e, text)))
+                        Err(HubSpotError::DeserializationError(format!(
+                            "Error: {}. Raw response: {}",
+                            e, text
+                        )))
                     }
                 }
-            },
+            }
             StatusCode::UNAUTHORIZED => Err(HubSpotError::InvalidApiKey(
                 self.config.hubspot_api_key.clone(),
             )),
