@@ -39,6 +39,9 @@ pub enum HubSpotError {
 
     #[error("Network error: {0}")]
     NetworkError(String),
+
+    #[error("File read error : {0}")]
+    FileError(String),
 }
 
 impl HubSpotError {
