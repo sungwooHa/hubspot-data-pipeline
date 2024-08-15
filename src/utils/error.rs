@@ -60,3 +60,9 @@ impl HubSpotError {
         }
     }
 }
+
+impl From<std::io::Error> for HubSpotError {
+    fn from(error: std::io::Error) -> Self {
+        HubSpotError::FileError(error.to_string())
+    }
+}
